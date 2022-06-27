@@ -39,7 +39,7 @@ for r in rs:
   if r["handle"]:
     handle = r["handle"]
     if not handle in stats:
-      stats[handle] = { "handle": handle, "contests": 0, "highs": 0, "mediums": 0, "qaReports": 0, "gasReports": 0, "total": 0, "submissions": 0, "lastContest": 0 }
+      stats[handle] = { "handle": handle, "contests": 0, "highs": 0, "mediums": 0, "qaReports": 0, "gasReports": 0, "submissions": 0, "total": 0, "lastContest": 0 }
     if lastContest != stats[handle]["lastContest"]:
       stats[handle]["contests"] += 1
       stats[handle]["lastContest"] = lastContest
