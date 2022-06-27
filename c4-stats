@@ -5,6 +5,8 @@ import subprocess
 import csv
 import urllib.request
 from io import StringIO
+import json
+
 
 FINDINGS_URL="https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data/findings/findings.csv"
 
@@ -64,18 +66,16 @@ for h in stats.keys():
   stats[h]["total"] = ppUSD(stats[h]["total"])
 
 
-## Prints the records as valid JSON
-n = 0
-s = "["
+# Collate results
+results = []
 for warden in wardens:
-  if n > 0:
-    s += ","
   if warden in stats:
-    s += str(stats[warden]).replace("'", "\"")
+    results.append(stats[warden])
   else:
-    s += f'{{ "error" : "Warden {warden} has not competed" }}'
-  n += 1
-s += "]"
-print(s)
+    results.append({ "error" : "Warden {warden} has not competed" })
+
+## Prints the records as valid JSON
+
+print(json.dumps(results, indent=2))
 
 
