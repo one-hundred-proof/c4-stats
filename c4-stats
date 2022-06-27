@@ -11,14 +11,14 @@ else:
   exit(1)
 
 
-process = subprocess.run("rm -f findings.csv".split(), stdout=subprocess.PIPE)
+process = subprocess.run("rm -f /tmp/findings.csv".split(), stdout=subprocess.PIPE)
 
-cmd = "wget -q https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data/findings/findings.csv"
+cmd = "wget -q https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data/findings/findings.csv -O /tmp/findings.csv"
 subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
 
 rs = []
 
-with open("findings.csv", newline='') as file:
+with open("/tmp/findings.csv", newline='') as file:
   csvr = csv.reader(file)
   headers = next(csvr, None)
   for row in csvr:
@@ -70,7 +70,7 @@ for warden in wardens:
   if warden in stats:
     s += str(stats[warden]).replace("'", "\"")
   else:
-    print(f"Warden {warden} has not competed")
+    s += f'{{ "error" : "Warden {warden} has not competed" }}'
   n += 1
 s += "]"
 print(s)
