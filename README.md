@@ -46,3 +46,8 @@ Output
   }
 ]
 ```
+
+
+## Windows
+
+You may need the [Python Launcher for Windows](https://www.infoworld.com/article/3617292/how-to-use-pythons-py-launcher-for-windows.html).
