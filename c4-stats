@@ -5,10 +5,11 @@ import subprocess
 import csv
 
 if len(sys.argv) > 1:
-  warden=sys.argv[1]
+  wardens=sys.argv[1:len(sys.argv)]
 else:
-  print("Usage: c4-stats <warden>")
+  print("Usage: c4-stats <wardens...>")
   exit(1)
+
 
 process = subprocess.run("rm -f findings.csv".split(), stdout=subprocess.PIPE)
 
@@ -45,23 +46,16 @@ for r in rs:
 
 for h in stats.keys():
   del stats[h]["lastContest"]
-  stats[h]["averagePerContest"] = stats[h]["total"] / stats[h]["contests"]
-  stats[h]["averagePerSubmission"] = stats[h]["total"] / stats[h]["submissions"]
+  stats[h]["averagePerContest"] = round(stats[h]["total"] / stats[h]["contests"], 2)
+  stats[h]["averagePerSubmission"] = round(stats[h]["total"] / stats[h]["submissions"], 2)
+  stats[h]["total"] = round(stats[h]["total"], 2)
 
-if warden in stats:
-  print(stats[warden])
-else:
-  print(f"Warden {warden} has not competed")
+for warden in wardens:
+  if warden in stats:
+    print(stats[warden])
+  else:
+    print(f"Warden {warden} has not competed")
 
 
-# cmd = f"cat findings.csv | grep '{warden}' | awk 'BEGIN {{ FS=\",\" }}  {{ print $1 }}' | sort | uniq  | wc -l"
-# p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-# output, error = p.communicate()
-# numContests = int(output.strip().decode("UTF-8"))
-
-# if numContests > 0:
-#   print(f"{warden} contests: {numContests}")
-# else:
-#   print(f"{warden} has not competed")
 
 
