@@ -21,7 +21,6 @@ rs = []
 with open("findings.csv", newline='') as file:
   csvr = csv.reader(file)
   headers = next(csvr, None)
-  print(headers)
   for row in csvr:
     r = {}
     for i in range(0, len(headers)):
@@ -58,12 +57,19 @@ for h in stats.keys():
   stats[h]["averagePerSubmission"] = round(stats[h]["total"] / stats[h]["submissions"], 2)
   stats[h]["total"] = round(stats[h]["total"], 2)
 
+
+## Prints the records as valid JSON
+n = 0
+s = "["
 for warden in wardens:
+  if n > 0:
+    s += ","
   if warden in stats:
-    print(stats[warden])
+    s += str(stats[warden]).replace("'", "\"")
   else:
     print(f"Warden {warden} has not competed")
-
-
+  n += 1
+s += "]"
+print(s)
 
 

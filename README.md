@@ -5,9 +5,44 @@ A utility to mine the leaderboard stats for code4rena.com
 ## Usage
 
 ```
-$ ./c4-stats 0ximfake 0xhandle
+$ ./c4-stats cmichel 0xRajeev
 
-{'handle': '0ximfake', 'contests': 43, 'total': 5848.03, 'submissions': 74, 'averagePerContest': 136.0, 'averagePerSubmission': 79.03}
-{'handle': '0xhandle', 'contests': 15, 'total': 5572.49, 'submissions': 30, 'averagePerContest': 371.5, 'averagePerSubmission': 185.75}
+[{"handle": "cmichel", "contests": 93, "highs": 181, "mediums": 223, "qaReports": 12, "gasReports": 116, "total": 1148956.13, "submissions": 946, "averagePerContest": 12354.37, "averagePerSubmission": 1214.54},{"handle": "0xRajeev", "contests": 26, "highs": 52, "mediums": 72, "qaReports": 0, "gasReports": 163, "total": 290696.7, "submissions": 628, "averagePerContest": 11180.64, "averagePerSubmission": 462.89}]
+```
 
+To pretty print the output just pipe into `jq`
+
+```
+$ ./c4-stats cmichel 0xRajeev | jq
+```
+
+Output
+
+```json
+[
+  {
+    "handle": "cmichel",
+    "contests": 93,
+    "highs": 181,
+    "mediums": 223,
+    "qaReports": 12,
+    "gasReports": 116,
+    "total": 1148956.13,
+    "submissions": 946,
+    "averagePerContest": 12354.37,
+    "averagePerSubmission": 1214.54
+  },
+  {
+    "handle": "0xRajeev",
+    "contests": 26,
+    "highs": 52,
+    "mediums": 72,
+    "qaReports": 0,
+    "gasReports": 163,
+    "total": 290696.7,
+    "submissions": 628,
+    "averagePerContest": 11180.64,
+    "averagePerSubmission": 462.89
+  }
+]
 ```
