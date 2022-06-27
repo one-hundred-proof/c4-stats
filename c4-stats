@@ -29,6 +29,9 @@ with open("findings.csv", newline='') as file:
 
 stats = { }
 
+def ppUSD(n):
+  return '${:0,.2f}'.format(round(n, 2))
+
 # Initialize
 lastContest = 0
 for r in rs:
@@ -53,9 +56,9 @@ for r in rs:
 
 for h in stats.keys():
   del stats[h]["lastContest"]
-  stats[h]["averagePerContest"] = round(stats[h]["total"] / stats[h]["contests"], 2)
-  stats[h]["averagePerSubmission"] = round(stats[h]["total"] / stats[h]["submissions"], 2)
-  stats[h]["total"] = round(stats[h]["total"], 2)
+  stats[h]["averagePerContest"] = ppUSD(stats[h]["total"] / stats[h]["contests"])
+  stats[h]["averagePerSubmission"] = ppUSD(stats[h]["total"] / stats[h]["submissions"])
+  stats[h]["total"] = ppUSD(stats[h]["total"])
 
 
 ## Prints the records as valid JSON

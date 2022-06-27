@@ -27,10 +27,10 @@ Output
     "mediums": 223,
     "qaReports": 12,
     "gasReports": 116,
-    "total": 1148956.13,
+    "total": "$1148956.00",
     "submissions": 946,
-    "averagePerContest": 12354.37,
-    "averagePerSubmission": 1214.54
+    "averagePerContest": "$12354.00",
+    "averagePerSubmission": "$1215.00"
   },
   {
     "handle": "0xRajeev",
@@ -39,10 +39,10 @@ Output
     "mediums": 72,
     "qaReports": 0,
     "gasReports": 163,
-    "total": 290696.7,
+    "total": "$290697.00",
     "submissions": 628,
-    "averagePerContest": 11180.64,
-    "averagePerSubmission": 462.89
+    "averagePerContest": "$11181.00",
+    "averagePerSubmission": "$463.00"
   }
 ]
 ```
