@@ -1,5 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+import sys
+import subprocess
 
-ts-node $THIS_DIR/src/c4-stats.ts
+if len(sys.argv) > 1:
+  warden=sys.argv[1]
+else:
+  print("Usage: c4-stats <warden>")
+  exit(1)
+
+process = subprocess.Popen("rm -f findings.csv".split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
+cmd = "wget https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data/findings/findings.csv"
+process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
+cmd = f"/bin/bash -c cat findings.csv | grep '{warden}' | awk 'BEGIN {{ FS=\",\" }}  {{ print $1 }}' | sort | uniq  | wc -l"
+process = subprocess.Popen(cmd.split(), shell=True, stdout=subprocess.PIPE)
+output, error = process.communicate()
