@@ -1,0 +1,5 @@
+#!/bin/bash
+
+THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+ts-node $THIS_DIR/src/c4-stats.ts
