@@ -72,7 +72,7 @@ for warden in wardens:
   if warden in stats:
     results.append(stats[warden])
   else:
-    results.append({ "error" : "Warden {warden} has not competed" })
+    results.append({ "error" : f"Warden '{warden}' has not competed" })
 
 ## Prints the records as valid JSON
 
