@@ -2,6 +2,7 @@
 
 import sys
 import subprocess
+import csv
 
 if len(sys.argv) > 1:
   warden=sys.argv[1]
@@ -14,15 +15,53 @@ process = subprocess.run("rm -f findings.csv".split(), stdout=subprocess.PIPE)
 cmd = "wget -q https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data/findings/findings.csv"
 subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
 
+rs = []
 
-cmd = f"cat findings.csv | grep '{warden}' | awk 'BEGIN {{ FS=\",\" }}  {{ print $1 }}' | sort | uniq  | wc -l"
-p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-output, error = p.communicate()
-numContests = int(output.strip().decode("UTF-8"))
+with open("findings.csv", newline='') as file:
+  csvr = csv.reader(file)
+  headers = next(csvr, None)
+#  print(headers)
+  for row in csvr:
+    r = {}
+    for i in range(0, len(headers)):
+      r[headers[i]] = row[i]
+    rs.append(r)
 
-if numContests > 0:
-  print(f"{warden} contests: {numContests}")
+stats = { }
+
+# Initialize
+lastContest = 0
+for r in rs:
+  lastContest = r["contest"]
+  if r["handle"]:
+    handle = r["handle"]
+    if not handle in stats:
+      stats[handle] = { "handle": handle, "contests": 0, "total": 0, "submissions": 0, "lastContest": 0 }
+    if lastContest != stats[handle]["lastContest"]:
+      stats[handle]["contests"] += 1
+      stats[handle]["lastContest"] = lastContest
+    stats[handle]["submissions"] += 1
+    stats[handle]["total"] += float(r["awardUSD"])
+
+for h in stats.keys():
+  del stats[h]["lastContest"]
+  stats[h]["averagePerContest"] = stats[h]["total"] / stats[h]["contests"]
+  stats[h]["averagePerSubmission"] = stats[h]["total"] / stats[h]["submissions"]
+
+if warden in stats:
+  print(stats[warden])
 else:
-  print(f"{warden} has not competed")
+  print(f"Warden {warden} has not competed")
+
+
+# cmd = f"cat findings.csv | grep '{warden}' | awk 'BEGIN {{ FS=\",\" }}  {{ print $1 }}' | sort | uniq  | wc -l"
+# p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+# output, error = p.communicate()
+# numContests = int(output.strip().decode("UTF-8"))
+
+# if numContests > 0:
+#   print(f"{warden} contests: {numContests}")
+# else:
+#   print(f"{warden} has not competed")
 
 
