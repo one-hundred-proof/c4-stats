@@ -21,7 +21,7 @@ rs = []
 with open("findings.csv", newline='') as file:
   csvr = csv.reader(file)
   headers = next(csvr, None)
-#  print(headers)
+  print(headers)
   for row in csvr:
     r = {}
     for i in range(0, len(headers)):
@@ -37,10 +37,18 @@ for r in rs:
   if r["handle"]:
     handle = r["handle"]
     if not handle in stats:
-      stats[handle] = { "handle": handle, "contests": 0, "total": 0, "submissions": 0, "lastContest": 0 }
+      stats[handle] = { "handle": handle, "contests": 0, "highs": 0, "mediums": 0, "qaReports": 0, "gasReports": 0, "total": 0, "submissions": 0, "lastContest": 0 }
     if lastContest != stats[handle]["lastContest"]:
       stats[handle]["contests"] += 1
       stats[handle]["lastContest"] = lastContest
+    if r["finding"][0:1] == "H":
+      stats[handle]["highs"] += 1
+    if r["finding"][0:1] == "M":
+      stats[handle]["mediums"] += 1
+    if r["finding"][0:1] == "Q":
+      stats[handle]["qaReports"] += 1
+    if r["finding"][0:1] == "G":
+      stats[handle]["gasReports"] += 1
     stats[handle]["submissions"] += 1
     stats[handle]["total"] += float(r["awardUSD"])
 
