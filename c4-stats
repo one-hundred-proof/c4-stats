@@ -9,13 +9,20 @@ else:
   print("Usage: c4-stats <warden>")
   exit(1)
 
-process = subprocess.Popen("rm -f findings.csv".split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
+process = subprocess.run("rm -f findings.csv".split(), stdout=subprocess.PIPE)
 
-cmd = "wget https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data/findings/findings.csv"
-process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
+cmd = "wget -q https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data/findings/findings.csv"
+subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
 
-cmd = f"/bin/bash -c cat findings.csv | grep '{warden}' | awk 'BEGIN {{ FS=\",\" }}  {{ print $1 }}' | sort | uniq  | wc -l"
-process = subprocess.Popen(cmd.split(), shell=True, stdout=subprocess.PIPE)
-output, error = process.communicate()
+
+cmd = f"cat findings.csv | grep '{warden}' | awk 'BEGIN {{ FS=\",\" }}  {{ print $1 }}' | sort | uniq  | wc -l"
+p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+output, error = p.communicate()
+numContests = int(output.strip().decode("UTF-8"))
+
+if numContests > 0:
+  print(f"{warden} contests: {numContests}")
+else:
+  print(f"{warden} has not competed")
+
+
