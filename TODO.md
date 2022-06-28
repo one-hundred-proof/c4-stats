@@ -5,3 +5,4 @@
 
 - `contests`. Lists the names an ids of all constests a warden participated in
 - `stats`. The command we've currently got
+- create a graph (distribution) of findings vs dollars earned.
