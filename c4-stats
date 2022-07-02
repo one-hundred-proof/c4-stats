@@ -25,13 +25,13 @@ ns = parser.parse_args(sys.argv[1:])
 #
 # Global variables
 #
-rs = []
+findings_records = []
 
 
 #
 # Functions
 #
-def findings_records():
+def get_findings_records():
   response = urllib.request.urlopen(FINDINGS_URL)
   csv_data = response.read()
   rs = []
@@ -46,7 +46,7 @@ def findings_records():
     rs.append(r)
   return rs
 
-rs = findings_records()
+findings_records = get_findings_records()
 
 def ppUSD(n):
   return '${:0,.2f}'.format(round(n, 2))
@@ -54,7 +54,7 @@ def ppUSD(n):
 def basic_stats():
   stats = { }
   lastContest = 0
-  for r in rs:
+  for r in findings_records:
     lastContest = r["contest"]
     if r["handle"]:
       handle = r["handle"]
