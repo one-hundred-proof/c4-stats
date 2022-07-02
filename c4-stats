@@ -13,72 +13,89 @@ FINDINGS_URL="https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_d
 CONTEST_URL=""
 
 parser = argparse.ArgumentParser(prog="c4-stats")
-subp = parser.add_subparsers()
-statsp = subp.add_parser("stats", description="Basic statistics",help="stats help")
+subp = parser.add_subparsers(dest="command") # dest="command" means that we see which command was parsed
+
+statsp = subp.add_parser("basic", description="Basic statistics",help="stats help")
 statsp.add_argument('warden',type=str, nargs='+')
+
+ginip = subp.add_parser("distrib")
 
 ns = parser.parse_args(sys.argv[1:])
 
-
-response = urllib.request.urlopen(FINDINGS_URL)
-csv_data = response.read()
-
+#
+# Global variables
+#
 rs = []
 
-file = StringIO(bytes.decode(csv_data, "UTF-8"))
 
-csvr = csv.reader(file)
-headers = next(csvr, None)
-for row in csvr:
-  r = {}
-  for i in range(0, len(headers)):
-    r[headers[i]] = row[i]
-  rs.append(r)
+#
+# Functions
+#
+def findings_records():
+  response = urllib.request.urlopen(FINDINGS_URL)
+  csv_data = response.read()
+  rs = []
+  file = StringIO(bytes.decode(csv_data, "UTF-8"))
+  csvr = csv.reader(file)
+  headers = next(csvr, None)
 
-stats = { }
+  for row in csvr:
+    r = {}
+    for i in range(0, len(headers)):
+      r[headers[i]] = row[i]
+    rs.append(r)
+  return rs
+
+rs = findings_records()
 
 def ppUSD(n):
   return '${:0,.2f}'.format(round(n, 2))
 
-# Initialize
-lastContest = 0
-for r in rs:
-  lastContest = r["contest"]
-  if r["handle"]:
-    handle = r["handle"]
-    if not handle in stats:
-      stats[handle] = { "handle": handle, "contests": 0, "highs": 0, "mediums": 0, "qaReports": 0, "gasReports": 0, "submissions": 0, "total": 0, "lastContest": 0 }
-    if lastContest != stats[handle]["lastContest"]:
-      stats[handle]["contests"] += 1
-      stats[handle]["lastContest"] = lastContest
-    if r["finding"][0:1] == "H":
-      stats[handle]["highs"] += 1
-    if r["finding"][0:1] == "M":
-      stats[handle]["mediums"] += 1
-    if r["finding"][0:1] == "Q":
-      stats[handle]["qaReports"] += 1
-    if r["finding"][0:1] == "G":
-      stats[handle]["gasReports"] += 1
-    stats[handle]["submissions"] += 1
-    stats[handle]["total"] += float(r["awardUSD"])
+def basic_stats():
+  stats = { }
+  lastContest = 0
+  for r in rs:
+    lastContest = r["contest"]
+    if r["handle"]:
+      handle = r["handle"]
+      if not handle in stats:
+        stats[handle] = { "handle": handle, "contests": 0, "highs": 0, "mediums": 0, "qaReports": 0, "gasReports": 0, "submissions": 0, "total": 0, "lastContest": 0 }
+      if lastContest != stats[handle]["lastContest"]:
+        stats[handle]["contests"] += 1
+        stats[handle]["lastContest"] = lastContest
+      if r["finding"][0:1] == "H":
+        stats[handle]["highs"] += 1
+      if r["finding"][0:1] == "M":
+        stats[handle]["mediums"] += 1
+      if r["finding"][0:1] == "Q":
+        stats[handle]["qaReports"] += 1
+      if r["finding"][0:1] == "G":
+        stats[handle]["gasReports"] += 1
+      stats[handle]["submissions"] += 1
+      stats[handle]["total"] += float(r["awardUSD"])
 
-for h in stats.keys():
-  del stats[h]["lastContest"]
-  stats[h]["averagePerContest"] = ppUSD(stats[h]["total"] / stats[h]["contests"])
-  stats[h]["averagePerSubmission"] = ppUSD(stats[h]["total"] / stats[h]["submissions"])
-  stats[h]["total"] = ppUSD(stats[h]["total"])
+  for h in stats.keys():
+    del stats[h]["lastContest"]
+    stats[h]["averagePerContest"] = ppUSD(stats[h]["total"] / stats[h]["contests"])
+    stats[h]["averagePerSubmission"] = ppUSD(stats[h]["total"] / stats[h]["submissions"])
+    stats[h]["total"] = ppUSD(stats[h]["total"])
 
 
-# Collate results
-results = []
-for warden in ns.warden:
-  if warden in stats:
-    results.append(stats[warden])
-  else:
-    results.append({ "error" : f"Warden '{warden}' has not competed" })
+  # Collate results
+  results = []
+  for warden in ns.warden:
+    if warden in stats:
+      results.append(stats[warden])
+    else:
+      results.append({ "error" : f"Warden '{warden}' has not competed" })
+  return results
 
 ## Prints the records as valid JSON
 
-print(json.dumps(results, indent=2))
+if ns.command == "basic":
+  result = basic_stats()
+elif ns.command == "distrib":
+  result = {}
 
+print(json.dumps(result, indent=2))
 
