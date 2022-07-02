@@ -7,10 +7,13 @@ import urllib.request
 from io import StringIO
 import json
 import argparse
+import dateutil.parser
+import datetime
 
+CODE_ARENA="https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data"
 
-FINDINGS_URL="https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data/findings/findings.csv"
-CONTEST_URL=""
+FINDINGS_URL=f"{CODE_ARENA}/findings/findings.csv"
+CONTESTS_URL=f"{CODE_ARENA}/contests/contests.csv"
 
 parser = argparse.ArgumentParser(prog="c4-stats")
 subp = parser.add_subparsers(dest="command") # dest="command" means that we see which command was parsed
@@ -18,21 +21,16 @@ subp = parser.add_subparsers(dest="command") # dest="command" means that we see 
 statsp = subp.add_parser("basic", description="Basic statistics",help="stats help")
 statsp.add_argument('warden',type=str, nargs='+')
 
-ginip = subp.add_parser("distrib")
+distribp = subp.add_parser("by-contest", description="Show award for each contest in descending order of award")
+distribp.add_argument('warden', type=str, nargs='+')
 
 ns = parser.parse_args(sys.argv[1:])
 
 #
-# Global variables
-#
-findings_records = []
-
-
-#
 # Functions
 #
-def get_findings_records():
-  response = urllib.request.urlopen(FINDINGS_URL)
+def get_records(url):
+  response = urllib.request.urlopen(url)
   csv_data = response.read()
   rs = []
   file = StringIO(bytes.decode(csv_data, "UTF-8"))
@@ -46,10 +44,23 @@ def get_findings_records():
     rs.append(r)
   return rs
 
-findings_records = get_findings_records()
+findings_records = get_records(FINDINGS_URL)
+contest_records=get_records(CONTESTS_URL)
+
+def make_contest_hash(rs):
+  result = {}
+  for r in rs:
+    result[r['contestid']] = r
+  return result
+
+contest_hash = make_contest_hash(contest_records)
 
 def ppUSD(n):
   return '${:0,.2f}'.format(round(n, 2))
+
+def ppMonth(str):
+  dt = dateutil.parser.parse(str)
+  return dt.strftime("%B %Y")
 
 def basic_stats():
   stats = { }
@@ -90,12 +101,35 @@ def basic_stats():
       results.append({ "error" : f"Warden '{warden}' has not competed" })
   return results
 
+
+def byContest(wardens):
+  results = []
+  for warden in wardens:
+    stats = []
+    h = {}
+    for r in findings_records:
+      if r['handle'] and r['handle'] == warden:
+        award = float(r['awardUSD'])
+        if not r['contest'] in h:
+          c = contest_hash[r['contest']]
+          h[r['contest']] = { 'contest' : c['title'], 'amount': c['amount'], 'start': ppMonth(c['start_time']), 'awardUSD' : 0.0 }
+        h[r['contest']]['awardUSD'] += award
+    for k in h:
+      stats.append(h[k])
+    stats.sort(key=lambda r: -float(r['awardUSD']))
+    for s in stats:
+      s['awardUSD'] = ppUSD(s['awardUSD'])
+    results.append({ 'warden': warden, 'distribution': stats})
+  return results
+
+
 ## Prints the records as valid JSON
 
 if ns.command == "basic":
   result = basic_stats()
-elif ns.command == "distrib":
-  result = {}
+elif ns.command == "by-contest":
+  result = byContest(ns.warden)
+
 
 print(json.dumps(result, indent=2))
 
