@@ -4,7 +4,7 @@ A utility to mine the leaderboard stats for code4rena.com
 
 ## Usage
 
-So far there are two commands: `basic` and `by-contest` (with many more planned)
+So far there are two commands: `basic` and `by-contest` (with many more planned). Please send through your feature requests as GitHub Issues.
 
 ### `basic` command
 
