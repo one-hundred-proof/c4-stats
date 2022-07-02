@@ -112,14 +112,14 @@ def byContest(wardens):
         award = float(r['awardUSD'])
         if not r['contest'] in h:
           c = contest_hash[r['contest']]
-          h[r['contest']] = { 'contest' : c['title'], 'amount': c['amount'], 'start': ppMonth(c['start_time']), 'awardUSD' : 0.0 }
+          h[r['contest']] = { 'contest' : c['title'], 'amount': c['amount'], 'date': ppMonth(c['start_time']), 'awardUSD' : 0.0 }
         h[r['contest']]['awardUSD'] += award
     for k in h:
       stats.append(h[k])
     stats.sort(key=lambda r: -float(r['awardUSD']))
     for s in stats:
       s['awardUSD'] = ppUSD(s['awardUSD'])
-    results.append({ 'warden': warden, 'distribution': stats})
+    results.append({ 'warden': warden, 'distribution': stats} if len(stats) > 0 else { 'error': f'Warden {warden} does not exist'})
   return results
 
 
