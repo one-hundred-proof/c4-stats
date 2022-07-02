@@ -6,16 +6,19 @@ import csv
 import urllib.request
 from io import StringIO
 import json
+import argparse
 
 
 FINDINGS_URL="https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data/findings/findings.csv"
+CONTEST_URL=""
 
+parser = argparse.ArgumentParser(prog="c4-stats")
+subp = parser.add_subparsers()
+statsp = subp.add_parser("stats", description="Basic statistics",help="stats help")
+statsp.add_argument('warden',type=str, nargs='+')
 
+ns = parser.parse_args(sys.argv[1:])
 
-if len(sys.argv) > 1:
-  wardens=sys.argv[1:len(sys.argv)]
-else:
-  print("Usage: c4-stats <wardens...>")
 
 response = urllib.request.urlopen(FINDINGS_URL)
 csv_data = response.read()
@@ -68,7 +71,7 @@ for h in stats.keys():
 
 # Collate results
 results = []
-for warden in wardens:
+for warden in ns.warden:
   if warden in stats:
     results.append(stats[warden])
   else:
