@@ -103,7 +103,7 @@ Output
 ... etc ...
 ```
 
-## `gini` command
+### `gini` command
 
 This command measures the Gini coefficient, a measure of equality/inequality of outcome, on the entire awards. See [Wikipedia](https://en.wikipedia.org/wiki/Gini_coefficient) for more detail.
 
@@ -129,7 +129,7 @@ $ ./c4-stats gini
 ```
 
 
-## `gini-wardens` command
+### `gini-wardens` command
 
 This command is a lot like `gini` except that instead of treating each warden as an individual, it assumes a particular warden, and then calculates the Gini coefficient treating each _competition_ as an individual. Thus, it is a measure of consistency from competition to competition. A score of 0 would mean the warden always received the same award, while a score of 1 would mean they received 0 on all competitions save one.
 
