@@ -11,15 +11,13 @@ So far there are two commands: `basic` and `by-contest` (with many more planned)
 **Usage**
 
 ```
+$ ./c4-stats basic --help
 usage: c4-stats basic [-h] warden [warden ...]
 
 Basic statistics
 
 positional arguments:
   warden
-
-options:
-  -h, --help  show this help message and exit
 ```
 
 **Examples**
@@ -71,9 +69,6 @@ Show award for each contest in descending order of award
 
 positional arguments:
   warden
-
-options:
-  -h, --help  show this help message and exit
 ```
 
 **Examples**
@@ -106,6 +101,66 @@ Output
         "start": "July 2021",
         "awardUSD": "$23,682.33"
 ... etc ...
+```
+
+## `gini` command
+
+This command measures the Gini coefficient, a measure of equality/inequality of outcome, on the entire awards. See [Wikipedia](https://en.wikipedia.org/wiki/Gini_coefficient) for more detail.
+
+
+**Usage**
+
+```
+$ ./c4-stats gini --help
+usage: c4-stats gini [-h]
+
+Calculate the Gini coefficient for the entire competition
+0 is complete equality of result, 1 is all awards going to one person
+(https://en.wikipedia.org/wiki/Gini_coefficient)
+```
+
+**Examples**
+
+```
+$ ./c4-stats gini
+{
+  "gini": 0.8637485784663245
+}
+```
+
+
+## `gini-wardens` command
+
+This command is a lot like `gini` except that instead of treating each warden as an individual, it assumes a particular warden, and then calculates the Gini coefficient treating each _competition_ as an individual. Thus, it is a measure of consistency from competition to competition. A score of 0 would mean the warden always received the same award, while a score of 1 would mean they received 0 on all competitions save one.
+
+This command can take multiple wardens as arguments.
+
+**Usage**
+
+```
+$ ./c4-stats gini-wardens --help
+usage: c4-stats gini-wardens [-h] warden [warden ...]
+
+Calculate the Gini coefficient for one or more wardens where each contest
+is treated as an individual. The closer to 0 the more consistent a
+warden is.
+
+positional arguments:
+  warden
+```
+
+**Examples**
+
+```
+$ ./c4-stats gini-wardens cmichel 0xRajeev
+[
+  {
+    "gini(cmichel)": 0.5353830055383504
+  },
+  {
+    "gini(0xRajeev)": 0.3878875606298723
+  }
+]
 ```
 
 ## Platforms
