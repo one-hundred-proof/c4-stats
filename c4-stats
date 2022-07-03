@@ -174,7 +174,6 @@ def gini():
   # Now work out the mean
   total = 0.0
   n = 0
-
   result = calculate_gini(h, 'awardUSD')
   return { "gini" : result }
 
@@ -186,14 +185,19 @@ def giniForWardens(handles):
   results = []
   for handle in handles:
     h = {}
+    warden_found=False
     for r in findings_records:
       if r['handle'] == handle:
+        warden_found=True
         cid  = r['contest']
         if not cid in h:
           h[cid] = { 'awardUSD': 0.0 }
         h[cid]['awardUSD'] += float(r['awardUSD'])
-    gini = calculate_gini(h, 'awardUSD')
-    results.append({ f"gini({handle})" : gini })
+    if not warden_found:
+      results.append({ 'error' : f'Warden {handle} does not exist'})
+    else:
+      gini = calculate_gini(h, 'awardUSD')
+      results.append({ f"gini({handle})" : gini })
   return results
 
 ## Prints the records as valid JSON
