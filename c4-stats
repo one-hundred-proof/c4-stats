@@ -15,14 +15,27 @@ CODE_ARENA="https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_dat
 FINDINGS_URL=f"{CODE_ARENA}/findings/findings.csv"
 CONTESTS_URL=f"{CODE_ARENA}/contests/contests.csv"
 
-parser = argparse.ArgumentParser(prog="c4-stats")
+parser = argparse.ArgumentParser(prog="c4-stats", formatter_class=argparse.RawTextHelpFormatter)
 subp = parser.add_subparsers(dest="command") # dest="command" means that we see which command was parsed
 
-statsp = subp.add_parser("basic", description="Basic statistics",help="stats help")
+statsp = subp.add_parser("basic", description="Basic statistics")
 statsp.add_argument('warden',type=str, nargs='+')
 
 distribp = subp.add_parser("by-contest", description="Show award for each contest in descending order of award")
 distribp.add_argument('warden', type=str, nargs='+')
+
+ginip = subp.add_parser("gini",
+  description='Calculate the Gini coefficient for the entire competition\n' +
+              '0 is complete equality of result, 1 is all awards going to one person\n'+
+              '(https://en.wikipedia.org/wiki/Gini_coefficient)',
+              formatter_class=argparse.RawTextHelpFormatter)
+
+giniWardens = subp.add_parser("gini-wardens",
+  description='Calculate the Gini coefficient for one or more wardens where each contest\n'+
+              'is treated as an individual. The closer to 0 the more consistent a\n'+
+              'warden is.',
+  formatter_class=argparse.RawTextHelpFormatter)
+giniWardens.add_argument('warden', type=str, nargs='+')
 
 ns = parser.parse_args(sys.argv[1:])
 
@@ -119,9 +132,69 @@ def byContest(wardens):
     stats.sort(key=lambda r: -float(r['awardUSD']))
     for s in stats:
       s['awardUSD'] = ppUSD(s['awardUSD'])
-    results.append({ 'warden': warden, 'distribution': stats} if len(stats) > 0 else { 'error': f'Warden {warden} does not exist'})
+    results.append({ 'handle': warden, 'distribution': stats} if len(stats) > 0 else { 'error': f'Warden {warden} does not exist'})
   return results
 
+
+#
+# Calculates the Gini coefficient (https://en.wikipedia.org/wiki/Gini_coefficient)
+#
+# Takes
+# - h, a dictionary mapping keys to sub-records.
+# - amountKey, The key of the sub-record that returns a float amount
+#
+# Each record is regarded as an individual when calculating the Gini coefficient
+#
+def calculate_gini(h, amountKey):
+  total = 0
+  n = 0
+  for i in h:
+    total += h[i][amountKey]
+    n += 1
+  mean = total/n
+
+  gini_numerator = 0.0
+  # Now iterate through each warden and calculate the Gini coefficient
+  for i in h:
+    for j in h:
+      gini_numerator += abs(h[i][amountKey] - h[j][amountKey])
+  return gini_numerator / (2*n*n*mean)
+
+
+#
+# Calculates the gini coefficient of the entire competition since the beginning
+#
+def gini():
+  h = {}
+  for r in findings_records:
+    handle = r['handle']
+    if not handle in h:
+      h[handle] = { 'handle': handle, 'awardUSD' : 0 }
+    h[handle]['awardUSD'] += float(r['awardUSD'])
+  # Now work out the mean
+  total = 0.0
+  n = 0
+
+  result = calculate_gini(h, 'awardUSD')
+  return { "gini" : result }
+
+#
+# Calculates the gini coefficient for a warden by treating each competition as a separate "person".
+# Gives a measure of how unequally the contests pay-off for a specific warden.
+#
+def giniForWardens(handles):
+  results = []
+  for handle in handles:
+    h = {}
+    for r in findings_records:
+      if r['handle'] == handle:
+        cid  = r['contest']
+        if not cid in h:
+          h[cid] = { 'awardUSD': 0.0 }
+        h[cid]['awardUSD'] += float(r['awardUSD'])
+    gini = calculate_gini(h, 'awardUSD')
+    results.append({ f"gini({handle})" : gini })
+  return results
 
 ## Prints the records as valid JSON
 
@@ -129,7 +202,9 @@ if ns.command == "basic":
   result = basic_stats()
 elif ns.command == "by-contest":
   result = byContest(ns.warden)
-
+elif ns.command == "gini":
+  result = gini()
+elif ns.command == 'gini-wardens':
+  result = giniForWardens(ns.warden)
 
 print(json.dumps(result, indent=2))
-
