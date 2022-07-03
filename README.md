@@ -79,7 +79,7 @@ options:
 **Examples**
 
 ```
-$ ./c4-stats by-contest cmichel
+$ ./c4-stats by-contest 0xRajeev
 ```
 
 Output
@@ -105,7 +105,7 @@ Output
         "amount": "$100,000 USDC",
         "start": "July 2021",
         "awardUSD": "$23,682.33"
-... etc
+... etc ...
 ```
 
 ## Platforms
