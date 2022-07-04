@@ -1,4 +1,6 @@
 - [ ] Correlate `contests.csv` with `findings.csv`
+- [ ] Allow sorting by different metric for `gini-wardens` command
+- [ ] Create a "regen-docs" command to regenerate the documentation.
 
 ## Ideas for commands
 
