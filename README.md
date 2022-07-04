@@ -8,11 +8,9 @@ A utility to mine the leaderboard stats for code4rena.com
 $ pip -r requirements.txt
 ```
 
-
-
 ## Usage
 
-So far there are two commands: `basic` and `by-contest` (with many more planned). Please send through your feature requests as GitHub Issues.
+So far there are four commands: `basic` ,`by-contest`, `gini`, `gini-wardens` (with many more planned). Please send through your feature requests as GitHub Issues.
 
 ### `basic` command
 

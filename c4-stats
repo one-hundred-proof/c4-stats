@@ -26,14 +26,15 @@ distribp.add_argument('warden', type=str, nargs='+')
 
 ginip = subp.add_parser("gini",
   description='Calculate the Gini coefficient for the entire competition\n' +
-              '0 is complete equality of result, 1 is all awards going to one person\n'+
-              '(https://en.wikipedia.org/wiki/Gini_coefficient)',
+              '0.0 is complete equality of result. 1.0 is all awards going to one person\n'+
+              'See: https://en.wikipedia.org/wiki/Gini_coefficient',
               formatter_class=argparse.RawTextHelpFormatter)
 
 giniWardens = subp.add_parser("gini-wardens",
   description='Calculate the Gini coefficient for one or more wardens where each contest\n'+
-              'is treated as an individual. The closer to 0 the more consistent a\n'+
-              'warden is.',
+              'is treated as an individual. 0.0 means the warden got the same award for each \n'+
+              '1.0 means all awards came from one contest.\n'+
+              'See: https://en.wikipedia.org/wiki/Gini_coefficient',
   formatter_class=argparse.RawTextHelpFormatter)
 giniWardens.add_argument('warden', type=str, nargs='+')
 
@@ -210,5 +211,7 @@ elif ns.command == "gini":
   result = gini()
 elif ns.command == 'gini-wardens':
   result = giniForWardens(ns.warden)
+else:
+  parser.parse_args(["--help"])
 
 print(json.dumps(result, indent=2))
