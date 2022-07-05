@@ -74,9 +74,13 @@ contest_hash = make_contest_hash(contest_records)
 def ppUSD(n):
   return '${:0,.2f}'.format(round(n, 2))
 
-def ppMonth(str):
-  dt = dateutil.parser.parse(str)
+def ppMonth(epochTime):
+  dt = datetime.datetime.fromtimestamp(epochTime)
   return dt.strftime("%B %Y")
+
+def ppTime(epochTime):
+  dt = datetime.datetime.fromtimestamp(epochTime)
+  return dt.isoformat();
 
 def basic_stats():
   stats = { }
@@ -117,6 +121,8 @@ def basic_stats():
       results.append({ "error" : f"Warden '{warden}' has not competed" })
   return results
 
+def toEpoch(s):
+  return int(dateutil.parser.parse(s).strftime("%s"))
 
 def byContest(ns):
   results = []
@@ -146,9 +152,9 @@ def byContest(ns):
           c = contest_hash[r['contest']]
           h[r['contest']] = { 'contest' : c['title'],
                               'amount': c['amount'],
-                              'month': c['start_time'],
-                              'start_time': c['start_time'],
-                              'end_time': c['end_time'],
+                              'month': toEpoch(c['start_time']),
+                              'start_time': toEpoch(c['start_time']),
+                              'end_time': toEpoch(c['end_time']),
                               'awardUSD' : 0.0,
 
                             }
@@ -159,6 +165,8 @@ def byContest(ns):
     for s in stats:
       s['awardUSD'] = ppUSD(s['awardUSD'])
       s['month'] = ppMonth(s['month'])
+      s['start_time'] = ppTime(s['start_time'])
+      s['end_time'] = ppTime(s['end_time'])
     results.append({ 'handle': warden, 'distribution': stats} if len(stats) > 0 else { 'error': f'Warden {warden} does not exist'})
   return results
 
