@@ -146,7 +146,7 @@ def byContest(ns):
           c = contest_hash[r['contest']]
           h[r['contest']] = { 'contest' : c['title'],
                               'amount': c['amount'],
-                              'month': ppMonth(c['start_time']),
+                              'month': c['start_time'],
                               'start_time': c['start_time'],
                               'end_time': c['end_time'],
                               'awardUSD' : 0.0,
@@ -158,6 +158,7 @@ def byContest(ns):
     stats.sort(key=lambda r: sort_mult * r[sort_by])
     for s in stats:
       s['awardUSD'] = ppUSD(s['awardUSD'])
+      s['month'] = ppMonth(s['month'])
     results.append({ 'handle': warden, 'distribution': stats} if len(stats) > 0 else { 'error': f'Warden {warden} does not exist'})
   return results
 
