@@ -21,8 +21,10 @@ subp = parser.add_subparsers(dest="command") # dest="command" means that we see 
 statsp = subp.add_parser("basic", description="Basic statistics")
 statsp.add_argument('warden',type=str, nargs='+')
 
-distribp = subp.add_parser("by-contest", description="Show award for each contest in descending order of award")
-distribp.add_argument('warden', type=str, nargs='+')
+byContestP = subp.add_parser("by-contest", description="Show award for each contest in descending order of award")
+byContestP.add_argument('warden', type=str, nargs='+')
+byContestP.add_argument('-b', '--sort-by', nargs='?', help="sort by [awardUSD (default), month, start_time, end_time]")
+byContestP.add_argument('-s', '--sort-dir', nargs='?', help="sort by [d/descending (default), a/ascending]")
 
 ginip = subp.add_parser("gini",
   description='Calculate the Gini coefficient for the entire competition\n' +
@@ -116,9 +118,25 @@ def basic_stats():
   return results
 
 
-def byContest(wardens):
+def byContest(ns):
   results = []
-  for warden in wardens:
+  sort_by='awardUSD'
+  sort_mult=-1 # -1 for descending, 1 for ascending
+  if ns.sort_by != None:
+    validOpts = ['awardUSD', 'month', 'start_time', 'end_time']
+    if ns.sort_by in validOpts:
+      sort_by = ns.sort_by
+    else:
+      print(f'-b/--sort_by is not one of {validOpts}')
+      exit(1)
+  if ns.sort_dir != None:
+    validOpts = ['a', 'asc', 'ascending', 'd', 'desc', 'descending']
+    if ns.sort_dir in validOpts:
+      sort_mult = 1 if ns.sort_dir[0:1] == 'a' else -1
+    else:
+      print(f'--s/--sort-dir is not one of {validOpts}')
+      exit(1)
+  for warden in ns.warden:
     stats = []
     h = {}
     for r in findings_records:
@@ -126,11 +144,18 @@ def byContest(wardens):
         award = float(r['awardUSD'])
         if not r['contest'] in h:
           c = contest_hash[r['contest']]
-          h[r['contest']] = { 'contest' : c['title'], 'amount': c['amount'], 'date': ppMonth(c['start_time']), 'awardUSD' : 0.0 }
+          h[r['contest']] = { 'contest' : c['title'],
+                              'amount': c['amount'],
+                              'month': ppMonth(c['start_time']),
+                              'start_time': c['start_time'],
+                              'end_time': c['end_time'],
+                              'awardUSD' : 0.0,
+
+                            }
         h[r['contest']]['awardUSD'] += award
     for k in h:
       stats.append(h[k])
-    stats.sort(key=lambda r: -float(r['awardUSD']))
+    stats.sort(key=lambda r: sort_mult * r[sort_by])
     for s in stats:
       s['awardUSD'] = ppUSD(s['awardUSD'])
     results.append({ 'handle': warden, 'distribution': stats} if len(stats) > 0 else { 'error': f'Warden {warden} does not exist'})
@@ -206,7 +231,7 @@ def giniForWardens(handles):
 if ns.command == "basic":
   result = basic_stats()
 elif ns.command == "by-contest":
-  result = byContest(ns.warden)
+  result = byContest(ns)
 elif ns.command == "gini":
   result = gini()
 elif ns.command == 'gini-wardens':
