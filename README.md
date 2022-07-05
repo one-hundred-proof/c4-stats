@@ -69,12 +69,19 @@ Output
 
 ```
 $ ./c4-stats by-contest --help
-usage: c4-stats by-contest [-h] warden [warden ...]
+usage: c4-stats by-contest [-h] [-b [SORT_BY]] [-s [SORT_DIR]] warden [warden ...]
 
 Show award for each contest in descending order of award
 
 positional arguments:
   warden
+
+options:
+  -h, --help            show this help message and exit
+  -b [SORT_BY], --sort-by [SORT_BY]
+                        sort by [awardUSD (default), month, start_time, end_time]
+  -s [SORT_DIR], --sort-dir [SORT_DIR]
+                        sort by [d/descending (default), a/ascending]```
 ```
 
 **Examples**
@@ -87,25 +94,32 @@ Output
 ```json
 [
   {
-    "warden": "0xRajeev",
+    "handle": "0xRajeev",
     "distribution": [
       {
         "contest": "Vader Protocol contest",
         "amount": "27 ETH + 1000 VETH",
-        "start": "April 2021",
+        "month": "April 2021",
+        "start_time": "2021-04-22T00:00:00",
+        "end_time": "2021-04-28T23:59:00",
         "awardUSD": "$40,849.60"
       },
       {
         "contest": "Yield contest",
         "amount": "$100,000 USDC",
-        "start": "May 2021",
+        "month": "May 2021",
+        "start_time": "2021-05-27T00:00:00",
+        "end_time": "2021-06-02T23:59:00",
         "awardUSD": "$24,201.69"
       },
       {
         "contest": "Gro Protocol contest",
         "amount": "$100,000 USDC",
-        "start": "July 2021",
+        "month": "July 2021",
+        "start_time": "2021-07-01T00:00:00",
+        "end_time": "2021-07-07T23:59:00",
         "awardUSD": "$23,682.33"
+      },
 ... etc ...
 ```
 
