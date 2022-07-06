@@ -26,6 +26,11 @@ byContestP.add_argument('warden', type=str, nargs='+')
 byContestP.add_argument('-b', '--sort-by', nargs='?', help="sort by [awardUSD (default), month, start_time, end_time]")
 byContestP.add_argument('-s', '--sort-dir', nargs='?', help="sort by [d/descending (default), a/ascending]")
 
+listContestsP = subp.add_parser("list-contests", description="List contests and their contest IDs")
+
+contestP = subp.add_parser("contest", description="Show awards for contest with a particular ID")
+contestP.add_argument('id', type=int)
+
 ginip = subp.add_parser("gini",
   description='Calculate the Gini coefficient for the entire competition\n' +
               '0.0 is complete equality of result. 1.0 is all awards going to one person\n'+
@@ -120,6 +125,9 @@ def basic_stats():
     else:
       results.append({ "error" : f"Warden '{warden}' has not competed" })
   return results
+
+def listContests():
+  return contest_records
 
 def toEpoch(s):
   return int(dateutil.parser.parse(s).strftime("%s"))
@@ -245,6 +253,8 @@ elif ns.command == "gini":
   result = gini()
 elif ns.command == 'gini-wardens':
   result = giniForWardens(ns.warden)
+elif ns.command == 'list-contests':
+  result = listContests()
 else:
   parser.parse_args(["--help"])
 
