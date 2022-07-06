@@ -179,6 +179,25 @@ def byContest(ns):
   return results
 
 
+def contestResults(ns):
+    h = {}
+    contest_id = ns.id
+    for r in findings_records:
+      if r['contest'] == str(contest_id):
+        handle = r['handle']
+        if not handle in h:
+          h[handle] = { 'handle' : handle, 'awardUSD': 0.0 }
+        h[handle]['awardUSD'] += float(r['awardUSD'])
+    awards = []
+    for k in h:
+      awards.append(h[k])
+    awards.sort(key=lambda r: -r['awardUSD'])
+    for r in awards:
+      r['awardUSD'] = ppUSD(r['awardUSD'])
+    result = contest_hash[str(contest_id)]
+    result['awards'] = awards
+    return result
+
 #
 # Calculates the Gini coefficient (https://en.wikipedia.org/wiki/Gini_coefficient)
 #
@@ -255,6 +274,8 @@ elif ns.command == 'gini-wardens':
   result = giniForWardens(ns.warden)
 elif ns.command == 'list-contests':
   result = listContests()
+elif ns.command == "contest":
+  result = contestResults(ns)
 else:
   parser.parse_args(["--help"])
 
