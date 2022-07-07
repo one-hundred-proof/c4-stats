@@ -119,7 +119,7 @@ $ ./c4-stats list-contests
     "hide": "False",
     "league": "eth"
   },
-// ... etc ...
+  "... output truncated ..."
 ```
 
 ### `contest` command
@@ -183,7 +183,7 @@ $ ./c4-stats contest 50
       "awardUSD": "$3,653.72",
       "place": 4
     },
-// ... etc ...
+    "... output truncated ..."
 ```
 
 List results for a contest that is in GitHub Pull Request but hasn't yet been posted to the #announcements channel
@@ -218,7 +218,7 @@ $ ./c4-stats contest -f https://raw.githubusercontent.com/code-423n4/code423n4.c
       "awardUSD": "$2,844.65",
       "place": 4
     },
-// ... etc ...
+    "... output truncated ..."
 ```
 
 ### `by-contest` command
@@ -278,7 +278,7 @@ Output
         "end_time": "2021-07-07T23:59:00",
         "awardUSD": "$23,682.33"
       },
-      "... etc ..."
+      "... output truncated ..."
 ```
 
 ### `gini` command
