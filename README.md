@@ -10,7 +10,15 @@ $ pip -r requirements.txt
 
 ## Usage
 
-So far there are four commands: `basic` ,`by-contest`, `gini`, `gini-wardens` (with many more planned). Please send through your feature requests as GitHub Issues.
+Here are the current commands (with many more planned):
+- `basic`
+- `list-contests`
+- `contest`
+- `by-contest`
+- `gini`
+- `gini-wardens`
+
+If you'd like to see more, or tweaks on the current commands, please send through your feature requests as GitHub Issues.
 
 ### `basic` command
 
@@ -61,6 +69,147 @@ Output
     "averagePerSubmission": "$462.89"
   }
 ]
+```
+
+### `list-contests` command
+
+**Usage**
+
+```
+$ ./c4-stats list-contests --help
+usage: c4-stats list-contests [-h]
+
+List contests and their contest IDs
+
+options:
+  -h, --help  show this help message and exit
+```
+
+**Examples**
+
+```
+$ ./c4-stats list-contests
+[
+  {
+    "contestid": "1",
+    "title": "Slingshot Finance contest",
+    "sponsor": "Slingshot Finance",
+    "details": "Slingshot is a decentralized trading platform.",
+    "start_time": "2021-02-17T00:00:00.000Z",
+    "end_time": "2021-02-22T23:59:00.000Z",
+    "amount": "$20,000 USDC",
+    "repo": "https://github.com/code-423n4/2021-02-slingshot",
+    "findingsRepo": "https://github.com/code-423n4/2021-02-slingshot-findings",
+    "hide": "False",
+    "league": "eth"
+  },
+  {
+    "contestid": "2",
+    "title": "ElasticDAO contest",
+    "sponsor": "ElasticDAO",
+    "details": "ElasticDAO is an experiment in fair governance.",
+    "start_time": "2021-02-25T00:00:00.000Z",
+    "end_time": "2021-03-03T23:59:00.000Z",
+    "amount": "22 ETH",
+    "repo": "https://github.com/code-423n4/2021-03-elasticdao",
+    "findingsRepo": "https://github.com/code-423n4/2021-03-elasticdao-findings",
+    "hide": "False",
+    "league": "eth"
+  },
+... etc ...
+```
+
+### `contest` command
+
+**Usage**
+
+```
+usage: c4-stats contest [-h] [-f [CSV]] id
+
+Show awards for contest with a particular ID
+
+positional arguments:
+  id
+
+options:
+  -h, --help            show this help message and exit
+  -f [CSV], --csv [CSV]
+                        Load results from CSV file or URL
+```
+
+**Examples**
+
+List results for contest 50
+
+```
+$ c4-stats contest 50
+{
+  "contestid": "50",
+  "title": "FairSide contest",
+  "sponsor": "FairSide",
+  "details": "Decentralized Cost Sharing Network.",
+  "start_time": "2021-11-09T00:00:00.000Z",
+  "end_time": "2021-11-11T23:59:00.000Z",
+  "amount": "$30,000 worth of ETH",
+  "repo": "https://github.com/code-423n4/2021-11-fairside",
+  "findingsRepo": "https://github.com/code-423n4/2021-11-fairside-findings",
+  "hide": "False",
+  "league": "eth",
+  "num_contestants": 17,
+  "awards": [
+    {
+      "handle": "cmichel",
+      "awardUSD": "$9,818.99",
+      "place": 1
+    },
+    {
+      "handle": "leastwood",
+      "awardUSD": "$5,960.99",
+      "place": 2
+    },
+    {
+      "handle": "WatchPug",
+      "awardUSD": "$5,600.54",
+      "place": 3
+    },
+    {
+      "handle": "hickuphh3",
+      "awardUSD": "$3,653.72",
+      "place": 4
+    },
+... etc ...
+```
+
+List results for a contest that is in GitHub Pull Request but hasn't yet been posted to the #announcements channel
+
+```
+$ c4-stats contest -f https://raw.githubusercontent.com/code-423n4/code423n4.com/fc8907b162994f1b7092f4d4243ab76b08e430fe/_data/findings/findings.csv 129
+{
+  "contestid": "129",
+  "title": "Unknown contest",
+  "num_contestants": 99,
+  "awards": [
+    {
+      "handle": "WatchPug",
+      "awardUSD": "$6,358.48",
+      "place": 1
+    },
+    {
+      "handle": "cccz",
+      "awardUSD": "$3,469.41",
+      "place": 2
+    },
+    {
+      "handle": "0x1f8b",
+      "awardUSD": "$2,900.21",
+      "place": 3
+    },
+    {
+      "handle": "berndartmueller",
+      "awardUSD": "$2,844.65",
+      "place": 4
+    },
+... etc ...
 ```
 
 ### `by-contest` command

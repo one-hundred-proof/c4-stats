@@ -30,6 +30,7 @@ listContestsP = subp.add_parser("list-contests", description="List contests and 
 
 contestP = subp.add_parser("contest", description="Show awards for contest with a particular ID")
 contestP.add_argument('id', type=int)
+contestP.add_argument('-f', '--csv', nargs='?', help="Load results from CSV file or URL")
 
 ginip = subp.add_parser("gini",
   description='Calculate the Gini coefficient for the entire competition\n' +
@@ -50,14 +51,9 @@ ns = parser.parse_args(sys.argv[1:])
 #
 # Functions
 #
-def get_records(url):
-  response = urllib.request.urlopen(url)
-  csv_data = response.read()
+def get_records(csvr):
   rs = []
-  file = StringIO(bytes.decode(csv_data, "UTF-8"))
-  csvr = csv.reader(file)
   headers = next(csvr, None)
-
   for row in csvr:
     r = {}
     for i in range(0, len(headers)):
@@ -65,8 +61,20 @@ def get_records(url):
     rs.append(r)
   return rs
 
-findings_records = get_records(FINDINGS_URL)
-contest_records=get_records(CONTESTS_URL)
+def get_records_from_url(url):
+  response = urllib.request.urlopen(url)
+  csv_data = response.read()
+  file = StringIO(bytes.decode(csv_data, "UTF-8"))
+  csvr = csv.reader(file)
+  return get_records(csvr)
+
+def get_records_from_file(f):
+  with open(f, newline='') as csv_file:
+    csvr = csv.reader(csv_file)
+    return get_records(csvr)
+
+findings_records = get_records_from_url(FINDINGS_URL)
+contest_records=get_records_from_url(CONTESTS_URL)
 
 def make_contest_hash(rs):
   result = {}
@@ -180,10 +188,18 @@ def byContest(ns):
 
 
 def contestResults(ns):
+    global findings_records
+    global contest_hash
+    if ns.csv != None:
+      if ns.csv[0:4] == 'http':
+        findings_records = get_records_from_url(ns.csv)
+      else:
+        findings_records = get_records_from_file(ns.csv)
+      contest_hash = {}
     h = {}
-    contest_id = ns.id
+    contest_id = str(ns.id)
     for r in findings_records:
-      if r['contest'] == str(contest_id):
+      if r['contest'] == contest_id:
         handle = r['handle']
         if not handle in h:
           h[handle] = { 'handle' : handle, 'awardUSD': 0.0 }
@@ -192,9 +208,16 @@ def contestResults(ns):
     for k in h:
       awards.append(h[k])
     awards.sort(key=lambda r: -r['awardUSD'])
+    place = 0
     for r in awards:
+      place += 1
       r['awardUSD'] = ppUSD(r['awardUSD'])
-    result = contest_hash[str(contest_id)]
+      r['place'] = place
+    if contest_id in contest_hash:
+      result = contest_hash[contest_id]
+    else:
+      result = { 'contestid': contest_id, 'title': 'Unknown contest'}
+    result['num_contestants'] = place
     result['awards'] = awards
     return result
 
