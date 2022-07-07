@@ -278,7 +278,7 @@ Output
         "end_time": "2021-07-07T23:59:00",
         "awardUSD": "$23,682.33"
       },
-// ... etc ...
+/* ... etc ... */
 ```
 
 ### `gini` command
