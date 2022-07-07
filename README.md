@@ -89,6 +89,9 @@ options:
 
 ```
 $ ./c4-stats list-contests
+```
+
+```json
 [
   {
     "contestid": "1",
@@ -142,7 +145,10 @@ options:
 List results for contest 50
 
 ```
-$ c4-stats contest 50
+$ ./c4-stats contest 50
+```
+
+```json
 {
   "contestid": "50",
   "title": "FairSide contest",
@@ -183,7 +189,10 @@ $ c4-stats contest 50
 List results for a contest that is in GitHub Pull Request but hasn't yet been posted to the #announcements channel
 
 ```
-$ c4-stats contest -f https://raw.githubusercontent.com/code-423n4/code423n4.com/fc8907b162994f1b7092f4d4243ab76b08e430fe/_data/findings/findings.csv 129
+$ ./c4-stats contest -f https://raw.githubusercontent.com/code-423n4/code423n4.com/fc8907b162994f1b7092f4d4243ab76b08e430fe/_data/findings/findings.csv 129
+```
+
+```json
 {
   "contestid": "129",
   "title": "Unknown contest",
@@ -292,6 +301,9 @@ Calculate the Gini coefficient for the entire competition
 
 ```
 $ ./c4-stats gini
+```
+
+```json
 {
   "gini": 0.8637485784663245
 }
@@ -322,6 +334,9 @@ positional arguments:
 
 ```
 $ ./c4-stats gini-wardens cmichel 0xRajeev
+```
+
+```json
 [
   {
     "gini(cmichel)": 0.5353830055383504
