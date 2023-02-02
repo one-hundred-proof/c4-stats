@@ -2,6 +2,10 @@
 
 A utility to mine the leaderboard stats for code4rena.com
 
+## Show your appreciation
+
+If you like this tool please let me know [here](https://github.com/one-hundred-proof/c4-stats/issues/1) by giving me a reaction 👍 👎 ❤️ 👀
+
 ## Installation
 
 ```
