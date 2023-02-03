@@ -9,7 +9,7 @@ If you like this tool please let me know [here](https://github.com/one-hundred-p
 ## Installation
 
 ```
-$ pip -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
 
 ## Usage

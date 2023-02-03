@@ -11,7 +11,6 @@ import dateutil.parser
 import datetime
 
 CODE_ARENA="https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data"
-
 FINDINGS_URL=f"{CODE_ARENA}/findings/findings.csv"
 CONTESTS_URL=f"{CODE_ARENA}/contests/contests.csv"
 
@@ -62,7 +61,11 @@ def get_records(csvr):
   return rs
 
 def get_records_from_url(url):
-  response = urllib.request.urlopen(url)
+  try:
+    response = urllib.request.urlopen(url)
+  except:
+    print(f"Could not find file {url}")
+    sys.exit(1)
   csv_data = response.read()
   file = StringIO(bytes.decode(csv_data, "UTF-8"))
   csvr = csv.reader(file)
