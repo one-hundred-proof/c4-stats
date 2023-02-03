@@ -75,10 +75,12 @@ def get_records_from_file(f):
 findings_records = get_records_from_url(FINDINGS_URL)
 
 # It's not strictly necessary that CONTESTS_URL exists
+contest_records = []
 try:
   contest_records=get_records_from_url(CONTESTS_URL)
 except:
-  contest_records = {}
+  for i in range(0,1000):
+    contest_records.append({ 'contestid': f'{i}', 'title': f'Unknown contest {i}', 'sponsor': 'Unknown', 'start_time': '1970-01-01', 'end_time': '1970-01-01', 'amount': "$0", 'repo' : 'Unknown', 'findingsRepo': 'Unknown', 'hide': 'False', 'league': 'Unknown' })
 
 def make_contest_hash(rs):
   result = {}
@@ -169,10 +171,7 @@ def byContest(ns):
       if r['handle'] and r['handle'] == warden:
         award = float(r['awardUSD'])
         if not r['contest'] in h:
-          if not r['contest'] in contest_hash:
-            c = { 'title': f"Contest{r['contest']}", 'amount': '???', 'month': '???', 'start_time': "1970-01-01", 'end_time': "1970-01-01", 'awardUSD': 0.0 }
-          else:
-            c = contest_hash[r['contest']]
+          c = contest_hash[r['contest']]
           h[r['contest']] = { 'contest' : c['title'],
                               'amount': c['amount'],
                               'month': toEpoch(c['start_time']),
