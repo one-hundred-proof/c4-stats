@@ -12,7 +12,7 @@ import datetime
 
 CODE_ARENA="https://raw.githubusercontent.com/code-423n4/code423n4.com/main/_data"
 FINDINGS_URL=f"https://code4rena.com/community-resources/findings.csv"
-CONTESTS_URL=f"{CODE_ARENA}/contests/contests.csv"
+CONTESTS_URL=f"https://code4rena.com/community-resources/contests.csv"
 OLD_CONTESTS_URL="https://raw.githubusercontent.com/code-423n4/code423n4.com/74913b14b93923341b62f4e3df2ee475e7bf52f1/_data/contests/contests.csv"
 
 parser = argparse.ArgumentParser(prog="c4-stats", formatter_class=argparse.RawTextHelpFormatter)
@@ -151,7 +151,7 @@ def listContests():
   return contest_records
 
 def toEpoch(s):
-  return int(dateutil.parser.parse(s).strftime("%s"))
+  return int(dateutil.parser.parse(s,fuzzy=True).strftime("%s"))
 
 def byContest(ns):
   results = []
